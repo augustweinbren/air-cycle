@@ -44,14 +44,14 @@ void setup() {
   pm10Characteristic.writeValue(0);
   pm25Characteristic.writeValue(0);
   pm100Characteristic.writeValue(0);
-
+  BLE.advertise();
   Serial.println("Bluetooth active and waiting for connection");
 
   Serial.println("Adafruit PMSA003I Air Quality Sensor");
 
   // Wait one second for sensor to boot up!
   delay(1000);
-  BLE.advertise();
+
   // If using serial, initialize it and set baudrate before starting!
   // Uncomment one of the following
 //  Serial1.begin(9600);
@@ -78,7 +78,6 @@ void loop() {
     delay(500);  // try again in a bit!
     return;
   }
-  
   Serial.println("AQI reading success");
 
   Serial.println();
@@ -91,7 +90,7 @@ void loop() {
   pm25Characteristic.writeValue(data.pm25_standard);
   Serial.print(F("\t\tPM 10: ")); Serial.println(data.pm100_standard);
   pm100Characteristic.writeValue(data.pm100_standard);
-  Serial.println("Values printed to BLUETOOTH");
+  Serial.println("BLUETOOTH WRITTEN");
   Serial.println(F("Concentration Units (environmental)"));
   Serial.println(F("---------------------------------------"));
   Serial.print(F("PM 1.0: ")); Serial.print(data.pm10_env);
