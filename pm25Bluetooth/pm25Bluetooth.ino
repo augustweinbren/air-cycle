@@ -19,6 +19,7 @@ BLEByteCharacteristic pm100Characteristic(
   "6f440878-5a1a-4a76-819a-3e64f73098dd", BLERead | BLENotify);
 
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
+long prevMillis = 0;
 
 void setup() {
   // Wait for serial monitor to open
@@ -67,44 +68,44 @@ void setup() {
 
   Serial.println("PM25 found!");
 }
-
 void loop() {
-  BLE.poll();
+  BLEDevice central = BLE.central();
   
-  PM25_AQI_Data data;
-  
-  if (! aqi.read(&data)) {
-    Serial.println("Could not read from AQI");
-    delay(500);  // try again in a bit!
-    return;
+
+  if (central) {
+    Serial.println("Central Address");
+    Serial.println(central.address());
+    while (central.connected()) {
+      long currentMillis = millis();
+      if (currentMillis - prevMillis >= 3000) {
+        prevMillis = currentMillis;
+        updatePM();
+      }
+    }
   }
-  Serial.println("AQI reading success");
 
-  Serial.println();
-  Serial.println(F("---------------------------------------"));
-  Serial.println(F("Concentration Units (standard)"));
-  Serial.println(F("---------------------------------------"));
-  Serial.print(F("PM 1.0: ")); Serial.print(data.pm10_standard);
-  pm10Characteristic.writeValue(data.pm10_standard);
-  Serial.print(F("\t\tPM 2.5: ")); Serial.print(data.pm25_standard);
-  pm25Characteristic.writeValue(data.pm25_standard);
-  Serial.print(F("\t\tPM 10: ")); Serial.println(data.pm100_standard);
-  pm100Characteristic.writeValue(data.pm100_standard);
-  Serial.println("BLUETOOTH WRITTEN");
-  Serial.println(F("Concentration Units (environmental)"));
-  Serial.println(F("---------------------------------------"));
-  Serial.print(F("PM 1.0: ")); Serial.print(data.pm10_env);
-  Serial.print(F("\t\tPM 2.5: ")); Serial.print(data.pm25_env);
-  Serial.print(F("\t\tPM 10: ")); Serial.println(data.pm100_env);
-  Serial.println(F("---------------------------------------"));
-  Serial.print(F("Particles > 0.3um / 0.1L air:")); Serial.println(data.particles_03um);
-  Serial.print(F("Particles > 0.5um / 0.1L air:")); Serial.println(data.particles_05um);
-  Serial.print(F("Particles > 1.0um / 0.1L air:")); Serial.println(data.particles_10um);
-  Serial.print(F("Particles > 2.5um / 0.1L air:")); Serial.println(data.particles_25um);
-  Serial.print(F("Particles > 5.0um / 0.1L air:")); Serial.println(data.particles_50um);
-  Serial.print(F("Particles > 10 um / 0.1L air:")); Serial.println(data.particles_100um);
-  Serial.println(F("---------------------------------------"));
+}
+
+void updatePM() {
+    PM25_AQI_Data data;
+    if (! aqi.read(&data)) {
+      Serial.println("Could not read from AQI");
+      return; // try again next cycle!
+    }
+    if(!((BLE.central()).connected())) {
+      return;
+    }
+    Serial.println("AQI reading success");
   
-
-  delay(1000);
+    Serial.println();
+    Serial.println(F("---------------------------------------"));
+    Serial.println(F("Concentration Units (standard)"));
+    Serial.println(F("---------------------------------------"));
+    Serial.print(F("PM 1.0: ")); Serial.print(data.pm10_standard);
+    pm10Characteristic.writeValue(data.pm10_standard);
+    Serial.print(F("\t\tPM 2.5: ")); Serial.print(data.pm25_standard);
+    pm25Characteristic.writeValue(data.pm25_standard);
+    Serial.print(F("\t\tPM 10: ")); Serial.println(data.pm100_standard);
+    pm100Characteristic.writeValue(data.pm100_standard);
+    Serial.println("BLUETOOTH WRITTEN");
 }
