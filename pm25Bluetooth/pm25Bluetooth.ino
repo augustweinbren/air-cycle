@@ -69,8 +69,10 @@ void setup() {
   Serial.println("PM25 found!");
 }
 void loop() {
+
   BLEDevice central = BLE.central();
   
+
 
   if (central) {
     Serial.println("Central Address");
@@ -83,12 +85,15 @@ void loop() {
       }
     }
   }
+    Serial.print("Disconnected from central: ");
+    Serial.println(central.address());
 
 }
 
 void updatePM() {
     PM25_AQI_Data data;
     if (! aqi.read(&data)) {
+      BLE.central().connected();
       Serial.println("Could not read from AQI");
       return; // try again next cycle!
     }
@@ -102,10 +107,14 @@ void updatePM() {
     Serial.println(F("Concentration Units (standard)"));
     Serial.println(F("---------------------------------------"));
     Serial.print(F("PM 1.0: ")); Serial.print(data.pm10_standard);
+    BLE.central().connected();
     pm10Characteristic.writeValue(data.pm10_standard);
     Serial.print(F("\t\tPM 2.5: ")); Serial.print(data.pm25_standard);
+    BLE.central().connected();
     pm25Characteristic.writeValue(data.pm25_standard);
     Serial.print(F("\t\tPM 10: ")); Serial.println(data.pm100_standard);
+    BLE.central().connected();
     pm100Characteristic.writeValue(data.pm100_standard);
+    BLE.central().connected();
     Serial.println("BLUETOOTH WRITTEN");
 }
