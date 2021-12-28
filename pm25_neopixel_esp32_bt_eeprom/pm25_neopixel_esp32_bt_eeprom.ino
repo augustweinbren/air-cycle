@@ -103,15 +103,17 @@ void setup() {
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_NOTIFY);
     //notify used because speed more important than reliability (UDB vs TCP)
+  pm10Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
   pm25Characteristic = pService->createCharacteristic(
     PM25_UUID,
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_NOTIFY);
-  pm10Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
+  pm25Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
   pm100Characteristic = pService->createCharacteristic(
     PM100_UUID,
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_NOTIFY);
+  pm100Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
   pService->start();
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
