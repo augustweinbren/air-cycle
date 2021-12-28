@@ -219,6 +219,7 @@ void loop() {
     pm100Value = data.pm100_standard;
     pm100Characteristic -> setValue((uint8_t*)&pm100Value, 2);
     pm100Characteristic -> notify();
+    delay(10000);
   }
 
   if (!deviceConnected && oldDeviceConnected) {
@@ -234,7 +235,7 @@ void loop() {
     oldDeviceConnected = true;
   }
 
-  delay(10000);
+
   long endOfLoop = millis();
   int loopMillis = endOfLoop - startOfLoop;
   elapsedSecondsSinceLastWrite += loopMillis / 1000.0;
