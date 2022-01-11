@@ -79,15 +79,7 @@ void setup() {
   // Wait one second for sensor to boot up!
   delay(1000);
 
-  // If using serial, initialize it and set baudrate before starting!
-  // Uncomment one of the following
-//  Serial1.begin(9600);
-//  pmSerial.begin(9600);
-
-  // There are 3 options for connectivity!
-  //if (! aqi.begin_I2C()) {      // connect to the sensor over I2C
   if (! aqi.begin_UART(&Serial2)) { // connect to the sensor over hardware serial
-//  if (! aqi.begin_UART(&pmSerial)) { // connect to the sensor over software serial 
     Serial.println("Could not find PM 2.5 sensor!");
     while (1) { delay(10); }
   }
@@ -95,25 +87,32 @@ void setup() {
   Serial.println("PM25 found!");
   Serial.println("Setting up BLE...");
   BLEDevice::init("ESP32 PM Sensor");
+  
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
+  
   BLEService *pService = pServer->createService(SERVICE_UUID);
+  
   pm10Characteristic = pService->createCharacteristic(
     PM10_UUID,
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_NOTIFY);
     //notify used because speed more important than reliability (UDB vs TCP)
-  pm10Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
+
+  pm10Characteristic -> addDescriptor(new BLE2902()); //  allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
+  
   pm25Characteristic = pService->createCharacteristic(
     PM25_UUID,
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_NOTIFY);
   pm25Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
+  
   pm100Characteristic = pService->createCharacteristic(
     PM100_UUID,
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_NOTIFY);
   pm100Characteristic -> addDescriptor(new BLE2902()); //allow server-initiated updates (https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html)
+  
   pService->start();
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
@@ -122,17 +121,15 @@ void setup() {
   pAdvertising->setMaxPreferred(0x12); // See "advertising interval" for BLE
   BLEDevice::startAdvertising();
   Serial.println("Waiting for a client connection to notify...");
+  
   long endOfSetup = millis();
   int setupMillis = endOfSetup - startOfSetup;
   elapsedSecondsSinceLastWrite = setupMillis / 1000.0;
 }
 
-int i = 0;
 void loop() {
   long startOfLoop = millis();
-  if (deviceConnected) {
-    Serial.println("Client connected");
-  }
+
   if (elapsedSecondsSinceLastWrite >= 600.0) {
     tenMinuteInts++;
     elapsedSecondsSinceLastWrite -= 600.0;
@@ -148,6 +145,7 @@ void loop() {
     }
     EEPROM.write(2, tenMinuteInts);
   }
+  
   pixels.clear();
 
   PM25_AQI_Data data;
@@ -157,7 +155,7 @@ void loop() {
     delay(1000);  // try again in a bit!
     long endOfLoop = millis();
     int loopMillis = endOfLoop - startOfLoop;
-    elapsedSecondsSinceLastWrite += loopMillis / 1000.0;
+    elapsedSecondsSinceLastWrite += (loopMillis / 1000.0);
     return;
   }
   Serial.println("AQI reading success");
@@ -165,29 +163,33 @@ void loop() {
   int bitCount;
   if (data.pm25_standard <= 50) {
     color = 0x00FF00; // green
-    bitCount = map(data.pm25_standard, 0, 50, 1, 8);
+    bitCount = map(data.pm25_standard, 0, 50, 1, NUMPIXELS + 1);
   } else if (data.pm25_standard <= 100) {
     color = 0xFFFF00; //yellow
-    bitCount = map(data.pm25_standard, 51, 100, 1, 8);
+    bitCount = map(data.pm25_standard, 51, 100, 1, NUMPIXELS + 1);
   } else if (data.pm25_standard <= 150) {
     color = 0xFF8000; // orange
-    bitCount = map(data.pm25_standard, 101, 150, 1, 8);
+    bitCount = map(data.pm25_standard, 101, 150, 1, NUMPIXELS + 1);
   } else if (data.pm25_standard <= 200) {
     color = 0xFF0000; // red
-    bitCount = map(data.pm25_standard, 151, 200, 1, 8);
+    bitCount = map(data.pm25_standard, 151, 200, 1, NUMPIXELS + 1);
   } else {
     color = 0x7F00FF; //Purple
-    bitCount = map(data.pm25_standard, 201, 300, 1, 8);
+    bitCount = map(data.pm25_standard, 201, 300, 1, NUMPIXELS + 1);
   }
-  pixels.fill(color, 0, bitCount);  
-  pixels.show();
+
+  // bitCount shown has a slight possibility of being larger than the number of pixels,
+  // so needs to be capped
   Serial.print("NEOPIXEL pixel count: ");
-  Serial.println(i);
-  if (i == NUMPIXELS - 1) {
-    i = 0;
+  Serial.println(bitCount);
+  if (bitCount >= NUMPIXELS) {
+    pixels.fill(color);
   } else {
-    i++;
+    pixels.fill(color, 0, bitCount);
   }
+  pixels.show();
+
+
   Serial.println();
   Serial.println(F("---------------------------------------"));
   Serial.println(F("Concentration Units (standard)"));
@@ -208,8 +210,9 @@ void loop() {
   Serial.print(F("Particles > 5.0um / 0.1L air:")); Serial.println(data.particles_50um);
   Serial.print(F("Particles > 10 um / 0.1L air:")); Serial.println(data.particles_100um);
   Serial.println(F("---------------------------------------"));
-  
-  if(deviceConnected) {
+
+  if (deviceConnected) {
+    Serial.println("Client connected");
     pm10Value = data.pm10_standard;
     pm10Characteristic -> setValue((uint8_t*)&pm10Value, 2);
     pm10Characteristic -> notify();
@@ -238,5 +241,5 @@ void loop() {
 
   long endOfLoop = millis();
   int loopMillis = endOfLoop - startOfLoop;
-  elapsedSecondsSinceLastWrite += loopMillis / 1000.0;
+  elapsedSecondsSinceLastWrite += (loopMillis / 1000.0);
 }
