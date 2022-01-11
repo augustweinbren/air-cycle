@@ -61,7 +61,6 @@ void setup() {
 
 int i = 0;
 void loop() {
-//  BLE.poll();
   if (elapsedSecondsSinceLastWrite >= 600.0) {
     tenMinuteInts++;
     elapsedSecondsSinceLastWrite -= 600.0;
