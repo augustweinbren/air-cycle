@@ -2,7 +2,7 @@ Follow the following steps:
 
 1. As a NeoPixel is in use in this example, you will need to solder a set of four jumper pins onto its input end.
 2. After the NeoPixel has been prepared, you can prototype this version on a breadboard:
-   ![breadboard-based prototype](./pmSensor5VNeopixel_bb.png.png)
+   ![breadboard-based prototype](./pmSensor5VNeopixel_bb.png)
 3. Upload `pm25_neopixel_esp32.ino` to your ESP32 microcontroller.
 4. Build the stripboard-based prototype:
    *  Solder 14 jumper pins onto the stripboard
