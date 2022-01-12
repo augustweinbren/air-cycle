@@ -1,4 +1,3 @@
-/* Test sketch for Adafruit PM2.5 sensor with UART or I2C */
 #include "Adafruit_PM25AQI.h"
 #include <Adafruit_NeoPixel.h>
 
@@ -21,15 +20,7 @@ void setup() {
   // Wait one second for sensor to boot up!
   delay(1000);
 
-  // If using serial, initialize it and set baudrate before starting!
-  // Uncomment one of the following
-//  Serial1.begin(9600);
-//  pmSerial.begin(9600);
-
-  // There are 3 options for connectivity!
-  //if (! aqi.begin_I2C()) {      // connect to the sensor over I2C
   if (! aqi.begin_UART(&Serial2)) { // connect to the sensor over hardware serial
-//  if (! aqi.begin_UART(&pmSerial)) { // connect to the sensor over software serial 
     Serial.println("Could not find PM 2.5 sensor!");
     while (1) delay(10);
   }
@@ -38,7 +29,6 @@ void setup() {
 }
 int i = 0;
 void loop() {
-//  BLE.poll();
   pixels.clear();
 
   PM25_AQI_Data data;
