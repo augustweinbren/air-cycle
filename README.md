@@ -2,7 +2,7 @@
 - [Description <a name="description"></a>](#description-)
 - [Items Needed <a name="itemsNeeded"></a>](#items-needed-)
 - [Installations and Software Setups <a name="installation"></a>](#installations-and-software-setups-)
-- [Enclosure <a name="enclosure></a>](#enclosure-a-nameenclosurea)
+- [Enclosure <a name="enclosure"></a>](#enclosure-)
 ## Description <a name="description"></a>
 This directory contains everything needed to develop a BLE-enabled particulate matter monitor and 3D print a case and mount for a bicycle. 
 
@@ -43,7 +43,7 @@ This directory contains everything needed to develop a BLE-enabled particulate m
 6. [Download LightBlue](https://punchthrough.com/lightblue/)
 7. [Set up Adafruit IO](https://learn.adafruit.com/welcome-to-adafruit-io/getting-started-with-adafruit-io)
 
-## Enclosure <a name="enclosure></a>
+## Enclosure <a name="enclosure"></a>
 Note: it is not suggested to create an enclosure until a stripboard prototype is tried and tested. A step-by-step guide can be found in the [pm25_neopixel_esp32 directory](https://github.com/augustweinbren/air-cycle/tree/master/pm25_neopixel_esp32).
 
 1. Plug the prototype into the power bank using a USB cable, and confirm that the NeoPixel LEDs are at least partially lit up.
