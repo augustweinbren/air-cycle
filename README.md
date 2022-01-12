@@ -19,7 +19,7 @@ This directory contains everything needed to develop a BLE-enabled particulate m
 - Header pins
 - [Stripboard 64 x 95mm, 24 Tracks, 37 Holes](https://www.betterequipped.co.uk/stripboard-64-x-95mm-24-tracks-37-holes-4224)
 - Power bank
-- At least two breadboards (needed to fit ESP32 atop of)
+- At least two breadboards (two are needed due to ESP32's width)
 
 *Hand Tools*
 - [Stripboard Track Cutter](https://thepihut.com/products/stripboard-track-cutter?variant=37628041494723&currency=GBP&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&gclid=Cj0KCQiA8vSOBhCkARIsAGdp6RTHVP186qTaA273yeRDDO4YhkkDe5MsoM5w-hYyMir60p5wJHqxo-AaAh_cEALw_wcB)
