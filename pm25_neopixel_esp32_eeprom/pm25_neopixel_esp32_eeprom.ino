@@ -1,4 +1,4 @@
-/* Test sketch for Adafruit PM2.5 sensor with UART or I2C */
+/* NeoPixel-visualised data with EEPROM-based logging */
 #include "Adafruit_PM25AQI.h"
 #include <Adafruit_NeoPixel.h>
 #include <EEPROM.h>
