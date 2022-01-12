@@ -2,6 +2,7 @@
 - [Description <a name="description"></a>](#description-)
 - [Items Needed <a name="itemsNeeded"></a>](#items-needed-)
 - [Installations and Software Setups <a name="installation"></a>](#installations-and-software-setups-)
+- [Recommended order of Arduino deployments <a name="recommended order"></a>](#recommended-order-of-arduino-deployments-)
 - [Enclosure <a name="enclosure"></a>](#enclosure-)
 ## Description <a name="description"></a>
 This directory contains everything needed to develop a BLE-enabled particulate matter monitor and 3D print a case and mount for a bicycle. 
@@ -42,6 +43,14 @@ This directory contains everything needed to develop a BLE-enabled particulate m
 5. Set up your 3D modelling and printing software--this will depend on the particular modelling and printing software you are using
 6. [Download LightBlue](https://punchthrough.com/lightblue/)
 7. [Set up Adafruit IO](https://learn.adafruit.com/welcome-to-adafruit-io/getting-started-with-adafruit-io)
+
+## Recommended order of Arduino deployments <a name="recommended order"></a>
+The following order of software uploads via the Arduino IDE is recommended:
+1. `pm25Bluetooth`
+2. `Blink_ESP32`
+3. `pm25_neopixel_esp32`
+4. `pm25_neopixel_esp32_eeprom`
+5. `pm25_neopixel_esp32_bt_eeprom`
 
 ## Enclosure <a name="enclosure"></a>
 Note: it is not suggested to create an enclosure until a stripboard prototype is tried and tested. A step-by-step guide can be found in the [pm25_neopixel_esp32 directory](https://github.com/augustweinbren/air-cycle/tree/master/pm25_neopixel_esp32).
